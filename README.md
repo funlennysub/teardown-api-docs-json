@@ -19,7 +19,7 @@ Full version can be found [here](https://teardowngame.com/modding/api.html)
 ```lua
 local shapes = GetBodyShapes(body)
 for i=1,#shapes do
-	local shape = shapes[i]
+  local shape = shapes[i]
 end
 ```
 
