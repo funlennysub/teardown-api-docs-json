@@ -792,7 +792,7 @@
           }
         ],
         "info": "No Description",
-        "example": "local a = Vec(1,2,3)\nlocal b = Vec(3,0,0)\nlocal c = VecSub(a, b)\n\n--c now equals {-1,2,3}"
+        "example": "local a = Vec(1,2,3)\nlocal b = Vec(3,0,0)\nlocal c = VecSub(a, b)\n\n--c now equals {-2,2,3}"
       },
       {
         "name": "VecDot",
@@ -1202,7 +1202,7 @@
           }
         ],
         "info": "Transform one transform into the local space of another transform.\nThis is the opposite of TransformToParentTransform.",
-        "example": "local b = GetBodyTransform(body)\nlocal w = GetShapeWorldTransform(shape)\n\n--b represents the location of body in world space\n--w represents the location of shape in world space\n\nlocal s = TransformToLocalTransform(b, s)\n\n--s now represents the location of shape in body space."
+        "example": "local b = GetBodyTransform(body)\nlocal w = GetShapeWorldTransform(shape)\n\n--b represents the location of body in world space\n--w represents the location of shape in world space\n\nlocal s = TransformToLocalTransform(b, w)\n\n--s now represents the location of shape in body space."
       },
       {
         "name": "TransformToParentVec",
@@ -1841,6 +1841,28 @@
         "example": "local min, max = GetBodyBounds(body)\nlocal boundsSize = VecSub(max, min)\nlocal center = VecLerp(min, max, 0.5)"
       },
       {
+        "name": "GetBodyCenterOfMass",
+        "def": "point = GetBodyCenterOfMass(handle)",
+        "arguments": [
+          {
+            "name": "handle",
+            "type": "number",
+            "optional": false,
+            "desc": "Body handle"
+          }
+        ],
+        "return": [
+          {
+            "name": "point",
+            "type": "table",
+            "optional": false,
+            "desc": "Vector representing local center of mass in body space"
+          }
+        ],
+        "info": "No Description",
+        "example": "--Visualize center of mass on for body\nlocal com = GetBodyCenterOfMass(body)\nlocal worldPoint = TransformToParentPoint(GetBodyTransform(body), com)\nDebugCross(worldPoint)"
+      },
+      {
         "name": "IsBodyVisible",
         "def": "visible = IsBodyVisible(handle, maxDist)",
         "arguments": [
@@ -2101,14 +2123,16 @@
       },
       {
         "name": "GetShapeBody",
-        "def": "GetShapeBody(handle, handle)",
+        "def": "handle = GetShapeBody(handle)",
         "arguments": [
           {
             "name": "handle",
             "type": "number",
             "optional": false,
             "desc": "Shape handle"
-          },
+          }
+        ],
+        "return": [
           {
             "name": "handle",
             "type": "number",
@@ -2116,7 +2140,6 @@
             "desc": "Body handle"
           }
         ],
-        "return": [],
         "info": "Get handle to the body this shape is owned by. A shape is always owned by a body,\nbut can be transfered to a new body during destruction.",
         "example": "local body = GetShapeBody(shape)"
       },
@@ -2210,8 +2233,60 @@
           }
         ],
         "return": [],
-        "info": "Scale emissiveness for shape. If the shape has light sources attached, \ntheir intensity will be scaled by the same amount.",
+        "info": "Scale emissiveness for shape. If the shape has light sources attached,\ntheir intensity will be scaled by the same amount.",
         "example": "--Pulsate emissiveness and light intensity for shape\nlocal scale = math.sin(GetTime())*0.5 + 0.5\nSetShapeEmissiveScale(shape, scale)"
+      },
+      {
+        "name": "GetShapeMaterialAtPosition",
+        "def": "type, r, g, b, a = GetShapeMaterialAtPosition(handle, pos)",
+        "arguments": [
+          {
+            "name": "handle",
+            "type": "number",
+            "optional": false,
+            "desc": "Shape handle"
+          },
+          {
+            "name": "pos",
+            "type": "table",
+            "optional": false,
+            "desc": "Position in world space"
+          }
+        ],
+        "return": [
+          {
+            "name": "type",
+            "type": "string",
+            "optional": false,
+            "desc": "Material type"
+          },
+          {
+            "name": "r",
+            "type": "number",
+            "optional": false,
+            "desc": "Red"
+          },
+          {
+            "name": "g",
+            "type": "number",
+            "optional": false,
+            "desc": "Green"
+          },
+          {
+            "name": "b",
+            "type": "number",
+            "optional": false,
+            "desc": "Blue"
+          },
+          {
+            "name": "a",
+            "type": "number",
+            "optional": false,
+            "desc": "Alpha"
+          }
+        ],
+        "info": "Return material properties for a particular voxel",
+        "example": "local hit, dist, normal, shape = QueryRaycast(pos, dir, 10)\nif hit then\n\tlocal hitPoint = VecAdd(pos, VecScale(dir, dist))\n\tlocal mat = GetShapeMaterialAtPosition(shape, hitPoint)\n\tDebugPrint(\"Raycast hit voxel made out of \" .. mat)\nend"
       },
       {
         "name": "IsShapeVisible",
@@ -2616,7 +2691,7 @@
           }
         ],
         "info": "Return the current position or angle or the joint, measured in same way\nas joint limits.",
-        "example": "local min, max = GetJointLimits(hinge)\nlocal current = GetJointMovement(hinge)"
+        "example": "local current = GetJointMovement(hinge)"
       }
     ]
   },
@@ -2887,7 +2962,7 @@
           }
         ],
         "info": "No Description",
-        "example": "--Find triggers tagged \"toxic\" in script scope\nlocal triggers = FindTriggers(\"toxic\")\nfor i=1, #lights do\n\tlocal trigger = triggers[i]\n\t...\nend"
+        "example": "--Find triggers tagged \"toxic\" in script scope\nlocal triggers = FindTriggers(\"toxic\")\nfor i=1, #triggers do\n\tlocal trigger = triggers[i]\n\t...\nend"
       },
       {
         "name": "GetTriggerTransform",
@@ -2934,7 +3009,7 @@
       },
       {
         "name": "IsBodyInTrigger",
-        "def": "IsBodyInTrigger(trigger, shape)",
+        "def": "IsBodyInTrigger(trigger, body)",
         "arguments": [
           {
             "name": "trigger",
@@ -2943,7 +3018,7 @@
             "desc": "Trigger handle"
           },
           {
-            "name": "shape",
+            "name": "body",
             "type": "number",
             "optional": false,
             "desc": "Body handle"
@@ -3110,7 +3185,7 @@
           }
         ],
         "info": "No Description",
-        "example": "--Find screens tagged \"tv\" in script scope\nlocal screens = FindScreens(\"tv\")\nfor i=1, #screens do\nlocal screen = screens[i]\n...\nend"
+        "example": "--Find screens tagged \"tv\" in script scope\nlocal screens = FindScreens(\"tv\")\nfor i=1, #screens do\n\tlocal screen = screens[i]\n\t...\nend"
       },
       {
         "name": "SetScreenEnabled",
@@ -3237,7 +3312,7 @@
           }
         ],
         "info": "No Description",
-        "example": "--Find all vehicles in level tagged \"boat\"\nlocal boats = FindVehicles(\"boat\")\nfor i=1, #boats do\nlocal boat = boats[i]\n\t...\nend"
+        "example": "--Find all vehicles in level tagged \"boat\"\nlocal boats = FindVehicles(\"boat\")\nfor i=1, #boats do\n\tlocal boat = boats[i]\n\t...\nend"
       },
       {
         "name": "GetVehicleTransform",
@@ -3281,7 +3356,29 @@
           }
         ],
         "info": "No Description",
-        "example": "local body = GetVehicleBody(vehicle)\nif IsBodyBroken(body) then\n\t--Vehicle body is broken\nend"
+        "example": "local body = GetVehicleBody(vehicle)\nif IsBodyBroken(body) then\n--Vehicle body is broken\nend"
+      },
+      {
+        "name": "GetVehicleHealth",
+        "def": "health = GetVehicleHealth(vehicle)",
+        "arguments": [
+          {
+            "name": "vehicle",
+            "type": "number",
+            "optional": false,
+            "desc": "Vehicle handle"
+          }
+        ],
+        "return": [
+          {
+            "name": "health",
+            "type": "number",
+            "optional": false,
+            "desc": "Vehicle health (zero to one)"
+          }
+        ],
+        "info": "No Description",
+        "example": "local health = GetVehicleHealth(vehicle)"
       },
       {
         "name": "GetVehicleDriverPos",
@@ -3304,6 +3401,39 @@
         ],
         "info": "No Description",
         "example": "local driverPos = GetVehicleDriverPos(vehicle)\nlocal t = GetVehicleTransform(vehicle)\nlocal worldPos = TransformToParentPoint(t, driverPos)"
+      },
+      {
+        "name": "DriveVehicle",
+        "def": "DriveVehicle(vehicle, drive, steering, handbrake)",
+        "arguments": [
+          {
+            "name": "vehicle",
+            "type": "number",
+            "optional": false,
+            "desc": "Vehicle handle"
+          },
+          {
+            "name": "drive",
+            "type": "number",
+            "optional": false,
+            "desc": "Reverse/forward control -1 to 1"
+          },
+          {
+            "name": "steering",
+            "type": "number",
+            "optional": false,
+            "desc": "Left/right control -1 to 1"
+          },
+          {
+            "name": "handbrake",
+            "type": "boolean",
+            "optional": false,
+            "desc": "Handbrake control"
+          }
+        ],
+        "return": [],
+        "info": "This function applies input to vehicles, allowing for autonomous driving. The vehicle\nwill be turned on automatically and turned off when no longer called. Call this from\nthe tick function, not update.",
+        "example": "function tick()\n\t--Drive mycar forwards\n\tlocal v = FindVehicle(\"mycar\")\n\tDriveVehicle(v, 1, 0, false)\nend"
       }
     ]
   },
@@ -3429,7 +3559,7 @@
           }
         ],
         "info": "No Description",
-        "example": "local vehicle = GetPlayerVehicle()\nif vehicle ~= 0 then\n...\nend"
+        "example": "local vehicle = GetPlayerVehicle()\nif vehicle ~= 0 then\n\t...\nend"
       },
       {
         "name": "GetPlayerGrabShape",
@@ -3559,7 +3689,7 @@
             "name": "health",
             "type": "number",
             "optional": false,
-            "desc": "Se player health (between zero and one)"
+            "desc": "Set player health (between zero and one)"
           }
         ],
         "return": [],
@@ -3664,7 +3794,7 @@
         ],
         "return": [],
         "info": "No Description",
-        "example": "function init()\nsnd = LoadSound(\"beep.ogg\")\nend\n\nfunction tick()\nif trigSound then\nlocal pos = Vec(100, 0, 0)\nPlaySound(snd, pos, 0.5)\nend\nend"
+        "example": "function init()\n\tsnd = LoadSound(\"beep.ogg\")\nend\n\nfunction tick()\n\tif trigSound then\n\t\tlocal pos = Vec(100, 0, 0)\n\t\tPlaySound(snd, pos, 0.5)\n\tend\nend"
       },
       {
         "name": "PlayLoop",
@@ -3691,7 +3821,7 @@
         ],
         "return": [],
         "info": "Call this function continuously to play loop",
-        "example": "function init()\nloop = LoadLoop(\"siren.ogg\")\nend\n\nfunction tick()\nlocal pos = Vec(100, 0, 0)\nPlayLoop(loop, pos, 0.5)\nend"
+        "example": "function init()\n\tloop = LoadLoop(\"siren.ogg\")\nend\n\nfunction tick()\n\tlocal pos = Vec(100, 0, 0)\n\tPlayLoop(loop, pos, 0.5)\nend"
       },
       {
         "name": "PlayMusic",
@@ -3742,7 +3872,7 @@
           }
         ],
         "info": "No Description",
-        "example": "function init()\n\tarrow = LoadSprite(\"arrow.ogg\")\nend"
+        "example": "function init()\n\tarrow = LoadSprite(\"arrow.png\")\nend"
       },
       {
         "name": "DrawSprite",
@@ -3941,7 +4071,7 @@
           }
         ],
         "info": "This will perform a raycast or spherecast (if radius is more than zero) query.\nIf you want to set up a filter for the query you need to do so before every call\nto this function.",
-        "example": "--Raycast from a high point straight downwards, excluding a specific vehicle\nQueryRejectVehicle(vehicle)\nlocal hit, d = QueryRaycast(Vec(0, 100, 0), Vec(0, -1, 0), 100)\nif hit then\n...hit something at distance d\nend"
+        "example": "--Raycast from a high point straight downwards, excluding a specific vehicle\nQueryRejectVehicle(vehicle)\nlocal hit, d = QueryRaycast(Vec(0, 100, 0), Vec(0, -1, 0), 100)\nif hit then\n\t...hit something at distance d\nend"
       },
       {
         "name": "QueryClosestPoint",
@@ -4015,7 +4145,7 @@
           }
         ],
         "info": "Return all shapes within the provided world space, axis-aligned bounding box",
-        "example": "local list = QeueryShapes(Vec(0, 0, 0), Vec(10, 10, 10))\nfor i=1, #list do\n\tlocal shape = list[i]\n\t..\nend"
+        "example": "local list = QeueryAabbShapes(Vec(0, 0, 0), Vec(10, 10, 10))\nfor i=1, #list do\n\tlocal shape = list[i]\n\t..\nend"
       },
       {
         "name": "QueryAabbBodies",
@@ -4043,7 +4173,7 @@
           }
         ],
         "info": "Return all bodies within the provided world space, axis-aligned bounding box",
-        "example": "local list = QeueryBodies(Vec(0, 0, 0), Vec(10, 10, 10))\nfor i=1, #list do\n\tlocal body = list[i]\n\t..\nend"
+        "example": "local list = QeueryAabbBodies(Vec(0, 0, 0), Vec(10, 10, 10))\nfor i=1, #list do\n\tlocal body = list[i]\n\t..\nend"
       },
       {
         "name": "GetLastSound",
@@ -4273,13 +4403,19 @@
       },
       {
         "name": "SetCameraTransform",
-        "def": "SetCameraTransform(transform)",
+        "def": "SetCameraTransform(transform, [fov])",
         "arguments": [
           {
             "name": "transform",
             "type": "table",
             "optional": false,
             "desc": "Desired camera transform"
+          },
+          {
+            "name": "fov",
+            "type": "number",
+            "optional": true,
+            "desc": "Optional horizontal field of view in degrees (default: 90)"
           }
         ],
         "return": [],
@@ -4862,7 +4998,7 @@
       },
       {
         "name": "UiText",
-        "def": "w, h = UiText(text, move)",
+        "def": "w, h = UiText(text, [move])",
         "arguments": [
           {
             "name": "text",
@@ -4873,7 +5009,7 @@
           {
             "name": "move",
             "type": "boolean",
-            "optional": false,
+            "optional": true,
             "desc": "Automatically move cursor vertically. Default false."
           }
         ],
@@ -5346,13 +5482,13 @@
       },
       {
         "name": "UiTextButton",
-        "def": "pressed = UiTextButton(dist, [w], [h])",
+        "def": "pressed = UiTextButton(text, [w], [h])",
         "arguments": [
           {
-            "name": "dist",
-            "type": "number",
+            "name": "text",
+            "type": "string",
             "optional": false,
-            "desc": "Press distance"
+            "desc": "Text on button"
           },
           {
             "name": "w",
