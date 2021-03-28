@@ -23,7 +23,7 @@ for i=1,#shapes do
 end
 ```
 
-* All lists (`il` tags) with each element on a new line
+* All lists (`li` tags) with each element on a new line
 
 #### JSON doesn't have info such as:
 
