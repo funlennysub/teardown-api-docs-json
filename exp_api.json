@@ -1,5 +1,5 @@
 {
-  "version": "0.7.0",
+  "version": "0.7.1",
   "baseURL": "https://teardowngame.com/experimental/api.html",
   "api": [
     {
@@ -190,6 +190,21 @@
           ],
           "info": "Returns timestep of the last frame. If called from update, this returns\nthe simulation time step, which is always one 60th of a second (0.0166667).\nIf called from tick or draw it returns the actual time since last frame.",
           "example": "local dt = GetTimeStep()"
+        },
+        {
+          "name": "InputLastPressedKey",
+          "def": "name = InputLastPressedKey()",
+          "arguments": [],
+          "return": [
+            {
+              "name": "name",
+              "type": "string",
+              "optional": false,
+              "desc": "Name of last pressed key, empty if no key is pressed"
+            }
+          ],
+          "info": "No Description",
+          "example": "name = InputLastPressed()"
         },
         {
           "name": "InputPressed",
