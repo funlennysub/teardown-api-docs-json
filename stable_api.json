@@ -1,5 +1,5 @@
 {
-  "version": "0.6.2",
+  "version": "0.7.2",
   "baseURL": "https://teardowngame.com/modding/api.html",
   "api": [
     {
@@ -190,6 +190,21 @@
           ],
           "info": "Returns timestep of the last frame. If called from update, this returns\nthe simulation time step, which is always one 60th of a second (0.0166667).\nIf called from tick or draw it returns the actual time since last frame.",
           "example": "local dt = GetTimeStep()"
+        },
+        {
+          "name": "InputLastPressedKey",
+          "def": "name = InputLastPressedKey()",
+          "arguments": [],
+          "return": [
+            {
+              "name": "name",
+              "type": "string",
+              "optional": false,
+              "desc": "Name of last pressed key, empty if no key is pressed"
+            }
+          ],
+          "info": "No Description",
+          "example": "name = InputLastPressed()"
         },
         {
           "name": "InputPressed",
@@ -583,7 +598,7 @@
           ],
           "return": [],
           "info": "No Description",
-          "example": "SetBool(\"level.name\", \"foo\")"
+          "example": "SetString(\"level.name\", \"foo\")"
         },
         {
           "name": "GetString",
@@ -2106,7 +2121,7 @@
             }
           ],
           "info": "No Description",
-          "example": "--Search for a shape tagged \"mybox\" in script scope\nlocal target = FindShape(\"mybox\")\n\n--Search for a shape tagged \"laserturret\" in entire scene\nlocal escape = FindBody(\"laserturret\", true)"
+          "example": "--Search for a shape tagged \"mybox\" in script scope\nlocal target = FindShape(\"mybox\")\n\n--Search for a shape tagged \"laserturret\" in entire scene\nlocal escape = FindShape(\"laserturret\", true)"
         },
         {
           "name": "FindShapes",
@@ -2156,7 +2171,7 @@
             }
           ],
           "info": "No Description",
-          "example": "--Shape transform in body local space\nlocal shapeTransform = GetShapeLocalTransform(shape)\n\n--Body transform in world space\nlocal bodyTransforn = GetBodyTransform(GetShapeBody(shape))\n\n--Shape transform in world space\nlocal worldTranform = TransformToParentTransform(bodyTransform, shapeTransform)"
+          "example": "--Shape transform in body local space\nlocal shapeTransform = GetShapeLocalTransform(shape)\n\n--Body transform in world space\nlocal bodyTransform = GetBodyTransform(GetShapeBody(shape))\n\n--Shape transform in world space\nlocal worldTranform = TransformToParentTransform(bodyTransform, shapeTransform)"
         },
         {
           "name": "SetShapeLocalTransform",
@@ -2199,7 +2214,7 @@
             }
           ],
           "info": "This is a convenience function, transforming the shape out of body space",
-          "example": "local worldTransform = GetShapeWorldTransform(shape)\n\n--This is equivalent to\nlocal shapeTransform = GetShapeLocalTransform(shape)\nlocal bodyTransforn = GetBodyTransform(GetShapeBody(shape))\nworldTranform = TransformToParentTransform(bodyTransform, shapeTransform)"
+          "example": "local worldTransform = GetShapeWorldTransform(shape)\n\n--This is equivalent to\nlocal shapeTransform = GetShapeLocalTransform(shape)\nlocal bodyTransform = GetBodyTransform(GetShapeBody(shape))\nworldTranform = TransformToParentTransform(bodyTransform, shapeTransform)"
         },
         {
           "name": "GetShapeBody",
@@ -2656,7 +2671,7 @@
             }
           ],
           "info": "No Description",
-          "example": "local joint = FindLocation(\"doorhinge\")"
+          "example": "local joint = FindJoint(\"doorhinge\")"
         },
         {
           "name": "FindJoints",
@@ -2684,7 +2699,7 @@
             }
           ],
           "info": "No Description",
-          "example": "--Search for locations tagged \"doorhinge\" in script scope\nlocal hinges = FindLocations(\"doorhinge\")\nfor i=1, #hinges do\n\tlocal joint = hinges[i]\n\t...\nend"
+          "example": "--Search for locations tagged \"doorhinge\" in script scope\nlocal hinges = FindJoints(\"doorhinge\")\nfor i=1, #hinges do\n\tlocal joint = hinges[i]\n\t...\nend"
         },
         {
           "name": "IsJointBroken",
@@ -2948,7 +2963,7 @@
             }
           ],
           "return": [],
-          "info": "If light is owned by a shape, the emissive scale of that shape will be set \nto 0.0 when light is disabled and 1.0 when light is enabled.",
+          "info": "If light is owned by a shape, the emissive scale of that shape will be set\nto 0.0 when light is disabled and 1.0 when light is enabled.",
           "example": "SetLightEnabled(light, false)"
         },
         {
@@ -3048,6 +3063,28 @@
           ],
           "info": "No Description",
           "example": "local shape = GetLightShape(light)"
+        },
+        {
+          "name": "IsLightActive",
+          "def": "active = IsLightActive(handle)",
+          "arguments": [
+            {
+              "name": "handle",
+              "type": "number",
+              "optional": false,
+              "desc": "Light handle"
+            }
+          ],
+          "return": [
+            {
+              "name": "active",
+              "type": "boolean",
+              "optional": false,
+              "desc": "True if light is currently emitting light"
+            }
+          ],
+          "info": "No Description",
+          "example": "if IsLightActive(light) then\n\t--Do something\nend"
         },
         {
           "name": "IsPointAffectedByLight",
@@ -3181,6 +3218,34 @@
           "return": [],
           "info": "No Description",
           "example": "local t = Transform(Vec(0, 1, 0), QuatEuler(0, 90, 0))\nSetTriggerTransform(trigger, t)"
+        },
+        {
+          "name": "GetTriggerBounds",
+          "def": "min, max = GetTriggerBounds(handle)",
+          "arguments": [
+            {
+              "name": "handle",
+              "type": "number",
+              "optional": false,
+              "desc": "Trigger handle"
+            }
+          ],
+          "return": [
+            {
+              "name": "min",
+              "type": "table",
+              "optional": false,
+              "desc": "Lower point of trigger bounds in world space"
+            },
+            {
+              "name": "max",
+              "type": "table",
+              "optional": false,
+              "desc": "Upper point of trigger bounds in world space"
+            }
+          ],
+          "info": "Return the lower and upper points in world space of the trigger axis aligned bounding box",
+          "example": "local mi, ma = GetTriggerBounds(trigger)\nlocal list = QueryAabbShapes(mi, ma)"
         },
         {
           "name": "IsBodyInTrigger",
@@ -3633,8 +3698,15 @@
         },
         {
           "name": "GetPlayerTransform",
-          "def": "transform = GetPlayerTransform()",
-          "arguments": [],
+          "def": "transform = GetPlayerTransform(includePitch)",
+          "arguments": [
+            {
+              "name": "includePitch",
+              "type": "boolean",
+              "optional": false,
+              "desc": "Include the player pitch (look up/down) in transform"
+            }
+          ],
           "return": [
             {
               "name": "transform",
@@ -3643,22 +3715,28 @@
               "desc": "Current player transform"
             }
           ],
-          "info": "The player transform is located at the bottom of the player. The player transform\nconsiders heading (looking left and right). Forward is along negative Z axis.\nPlayer pitch (looking up and down) does not affect player transform. If you want\nthe transform of the eye, use GetPlayerCameraTransform() instead.",
+          "info": "The player transform is located at the bottom of the player. The player transform\nconsiders heading (looking left and right). Forward is along negative Z axis.\nPlayer pitch (looking up and down) does not affect player transform unless includePitch\nis set to true. If you want the transform of the eye, use GetPlayerCameraTransform() instead.",
           "example": "local t = GetPlayerTransform()"
         },
         {
           "name": "SetPlayerTransform",
-          "def": "SetPlayerTransform(transform)",
+          "def": "SetPlayerTransform(transform, includePitch)",
           "arguments": [
             {
               "name": "transform",
               "type": "table",
               "optional": false,
               "desc": "Desired player transform"
+            },
+            {
+              "name": "includePitch",
+              "type": "boolean",
+              "optional": false,
+              "desc": "Set player pitch (look up/down) as well"
             }
           ],
           "return": [],
-          "info": "Instantly teleport the player to desired transform. Player velocity\nand up/down look angle will be set to zero during this process.",
+          "info": "Instantly teleport the player to desired transform. Unless includePitch is\nset to true, up/down look angle will be set to zero during this process.\nPlayer velocity will be reset to zero.",
           "example": "local t = Transform(Vec(10, 0, 0), QuatEuler(0, 90, 0))\nSetPlayerTransform(t)"
         },
         {
@@ -3953,17 +4031,23 @@
         },
         {
           "name": "SetToolTransform",
-          "def": "SetToolTransform(transform)",
+          "def": "SetToolTransform(transform, sway)",
           "arguments": [
             {
               "name": "transform",
               "type": "table",
               "optional": false,
               "desc": "Tool body transform"
+            },
+            {
+              "name": "sway",
+              "type": "number",
+              "optional": false,
+              "desc": "Tool sway amount. Default is 1.0."
             }
           ],
           "return": [],
-          "info": "Apply an additional transform on the visible tool body. This can be used to\ncreate tool animations. You need to set this every frame from the tick function.",
+          "info": "Apply an additional transform on the visible tool body. This can be used to\ncreate tool animations. You need to set this every frame from the tick function.\nThe optional sway parameter control the amount of tool swaying when walking.\nSet to zero to disable completely.",
           "example": "--Offset the tool half a meter to the right\nlocal offset = Transform(Vec(0.5, 0, 0))\nSetToolTransform(offset)"
         }
       ]
@@ -4123,7 +4207,7 @@
         },
         {
           "name": "DrawSprite",
-          "def": "DrawSprite(handle, transform, width, height, r, g, b, a, [depthTest], [additive])",
+          "def": "DrawSprite(handle, transform, width, height, [r], [g], [b], [a], [depthTest], [additive])",
           "arguments": [
             {
               "name": "handle",
@@ -4152,26 +4236,26 @@
             {
               "name": "r",
               "type": "number",
-              "optional": false,
-              "desc": "Red color"
+              "optional": true,
+              "desc": "Red color. Default 1.0."
             },
             {
               "name": "g",
               "type": "number",
-              "optional": false,
-              "desc": "Green color"
+              "optional": true,
+              "desc": "Green color. Default 1.0."
             },
             {
               "name": "b",
               "type": "number",
-              "optional": false,
-              "desc": "Blue color"
+              "optional": true,
+              "desc": "Blue color. Default 1.0."
             },
             {
               "name": "a",
               "type": "number",
-              "optional": false,
-              "desc": "Alpha"
+              "optional": true,
+              "desc": "Alpha. Default 1.0."
             },
             {
               "name": "depthTest",
@@ -4474,6 +4558,473 @@
       ]
     },
     {
+      "category": "Particles",
+      "desc": "Functions to configure and emit particles, used for fire, smoke and other visual effects. There are two types of particles in Teardown - plain particles and smoke particles. Plain particles are simple billboard particles simulated with gravity and velocity that can be used for fire, debris, rain, snow and such. Smoke particles are only intended for smoke and they are simulated with fluid dynamics internally and rendered with some special tricks to get a more smoke-like appearance.\nAll functions in the particle API, except for SpawnParticle modify properties in the particle state, which is then used when emitting particles, so the idea is to set up a state, and then emit one or several particles using that state.\nMost properties in the particle state can be either constant or animated over time. Supply a single argument for constant, two argument for linear interpolation, and optionally a third argument for other types of interpolation. There are also fade in and fade out parameters that fade from and to zero.",
+      "functions": [
+        {
+          "name": "ParticleReset",
+          "def": "ParticleReset()",
+          "arguments": [],
+          "return": [],
+          "info": "Reset to default particle state, which is a plain, white particle of radius 0.5.\nCollision is enabled and it alpha animates from 1 to 0.",
+          "example": "ParticleReset()"
+        },
+        {
+          "name": "ParticleType",
+          "def": "ParticleType(type)",
+          "arguments": [
+            {
+              "name": "type",
+              "type": "string",
+              "optional": false,
+              "desc": "Type of particle. Can be \"smoke\" or \"plain\"."
+            }
+          ],
+          "return": [],
+          "info": "Set type of particle",
+          "example": "ParticleType(\"smoke\")"
+        },
+        {
+          "name": "ParticleTile",
+          "def": "ParticleTile(type)",
+          "arguments": [
+            {
+              "name": "type",
+              "type": "int",
+              "optional": false,
+              "desc": "Tile in the particle texture atlas (0-15)"
+            }
+          ],
+          "return": [],
+          "info": "No Description",
+          "example": "--Smoke particle\nParticleTile(0)\n\n--Fire particle\nParticleTile(5)"
+        },
+        {
+          "name": "ParticleColor",
+          "def": "ParticleColor(r0, g0, b0, [r1], [g1], [b1])",
+          "arguments": [
+            {
+              "name": "r0",
+              "type": "float",
+              "optional": false,
+              "desc": "Red value"
+            },
+            {
+              "name": "g0",
+              "type": "float",
+              "optional": false,
+              "desc": "Green value"
+            },
+            {
+              "name": "b0",
+              "type": "float",
+              "optional": false,
+              "desc": "Blue value"
+            },
+            {
+              "name": "r1",
+              "type": "float",
+              "optional": true,
+              "desc": "Red value at end"
+            },
+            {
+              "name": "g1",
+              "type": "float",
+              "optional": true,
+              "desc": "Green value at end"
+            },
+            {
+              "name": "b1",
+              "type": "float",
+              "optional": true,
+              "desc": "Blue value at end"
+            }
+          ],
+          "return": [],
+          "info": "Set particle color to either constant (three arguments) or linear interpolation (six arguments)",
+          "example": "--Constant red\nParticleColor(1,0,0)\n\n--Animating from yellow to red\nParticleColor(1,1,0, 1,0,0)"
+        },
+        {
+          "name": "ParticleRadius",
+          "def": "ParticleRadius(r0, [r1], [interpolation], [fadein], [fadeout])",
+          "arguments": [
+            {
+              "name": "r0",
+              "type": "float",
+              "optional": false,
+              "desc": "Radius"
+            },
+            {
+              "name": "r1",
+              "type": "float",
+              "optional": true,
+              "desc": "End radius"
+            },
+            {
+              "name": "interpolation",
+              "type": "string",
+              "optional": true,
+              "desc": "Interpolation method: linear, smooth, easein, easeout or constant. Default is linear."
+            },
+            {
+              "name": "fadein",
+              "type": "float",
+              "optional": true,
+              "desc": "Fade in between t=0 and t=fadein. Default is zero."
+            },
+            {
+              "name": "fadeout",
+              "type": "float",
+              "optional": true,
+              "desc": "Fade out between t=fadeout and t=1. Default is one."
+            }
+          ],
+          "return": [],
+          "info": "Set the particle radius. Max radius for smoke particles is 1.0.",
+          "example": "--Constant radius 0.4 meters\nParticleRadius(0.4)\n\n--Interpolate from small to large\nParticleRadius(0.1, 0.7)"
+        },
+        {
+          "name": "ParticleAlpha",
+          "def": "ParticleAlpha(a0, [a1], [interpolation], [fadein], [fadeout])",
+          "arguments": [
+            {
+              "name": "a0",
+              "type": "float",
+              "optional": false,
+              "desc": "Alpha (0.0 - 1.0)"
+            },
+            {
+              "name": "a1",
+              "type": "float",
+              "optional": true,
+              "desc": "End alpha (0.0 - 1.0)"
+            },
+            {
+              "name": "interpolation",
+              "type": "string",
+              "optional": true,
+              "desc": "Interpolation method: linear, smooth, easein, easeout or constant. Default is linear."
+            },
+            {
+              "name": "fadein",
+              "type": "float",
+              "optional": true,
+              "desc": "Fade in between t=0 and t=fadein. Default is zero."
+            },
+            {
+              "name": "fadeout",
+              "type": "float",
+              "optional": true,
+              "desc": "Fade out between t=fadeout and t=1. Default is one."
+            }
+          ],
+          "return": [],
+          "info": "Set the particle alpha (opacity).",
+          "example": "--Interpolate from opaque to transparent\nParticleAlpha(1.0, 0.0)"
+        },
+        {
+          "name": "ParticleGravity",
+          "def": "ParticleGravity(g0, [g1], [interpolation], [fadein], [fadeout])",
+          "arguments": [
+            {
+              "name": "g0",
+              "type": "float",
+              "optional": false,
+              "desc": "Gravity"
+            },
+            {
+              "name": "g1",
+              "type": "float",
+              "optional": true,
+              "desc": "End gravity"
+            },
+            {
+              "name": "interpolation",
+              "type": "string",
+              "optional": true,
+              "desc": "Interpolation method: linear, smooth, easein, easeout or constant. Default is linear."
+            },
+            {
+              "name": "fadein",
+              "type": "float",
+              "optional": true,
+              "desc": "Fade in between t=0 and t=fadein. Default is zero."
+            },
+            {
+              "name": "fadeout",
+              "type": "float",
+              "optional": true,
+              "desc": "Fade out between t=fadeout and t=1. Default is one."
+            }
+          ],
+          "return": [],
+          "info": "Set particle gravity. It will be applied along the world Y axis. A negative value will move the particle downwards.",
+          "example": "--Move particles slowly upwards\nParticleGravity(2)"
+        },
+        {
+          "name": "ParticleDrag",
+          "def": "ParticleDrag(d0, [d1], [interpolation], [fadein], [fadeout])",
+          "arguments": [
+            {
+              "name": "d0",
+              "type": "float",
+              "optional": false,
+              "desc": "Drag"
+            },
+            {
+              "name": "d1",
+              "type": "float",
+              "optional": true,
+              "desc": "End drag"
+            },
+            {
+              "name": "interpolation",
+              "type": "string",
+              "optional": true,
+              "desc": "Interpolation method: linear, smooth, easein, easeout or constant. Default is linear."
+            },
+            {
+              "name": "fadein",
+              "type": "float",
+              "optional": true,
+              "desc": "Fade in between t=0 and t=fadein. Default is zero."
+            },
+            {
+              "name": "fadeout",
+              "type": "float",
+              "optional": true,
+              "desc": "Fade out between t=fadeout and t=1. Default is one."
+            }
+          ],
+          "return": [],
+          "info": "Particle drag will slow down fast moving particles. It's implemented slightly different for\nsmoke and plain particles. Drag must be positive, and usually look good between zero and one.",
+          "example": "--Sow down fast moving particles\nParticleDrag(0.5)"
+        },
+        {
+          "name": "ParticleEmissive",
+          "def": "ParticleEmissive(d0, [d1], [interpolation], [fadein], [fadeout])",
+          "arguments": [
+            {
+              "name": "d0",
+              "type": "float",
+              "optional": false,
+              "desc": "Emissive"
+            },
+            {
+              "name": "d1",
+              "type": "float",
+              "optional": true,
+              "desc": "End emissive"
+            },
+            {
+              "name": "interpolation",
+              "type": "string",
+              "optional": true,
+              "desc": "Interpolation method: linear, smooth, easein, easeout or constant. Default is linear."
+            },
+            {
+              "name": "fadein",
+              "type": "float",
+              "optional": true,
+              "desc": "Fade in between t=0 and t=fadein. Default is zero."
+            },
+            {
+              "name": "fadeout",
+              "type": "float",
+              "optional": true,
+              "desc": "Fade out between t=fadeout and t=1. Default is one."
+            }
+          ],
+          "return": [],
+          "info": "Draw particle as emissive (glow in the dark). This is useful for fire and embers.",
+          "example": "--Highly emissive at start, not emissive at end\nParticleEmissive(5, 0)"
+        },
+        {
+          "name": "ParticleRotation",
+          "def": "ParticleRotation(r0, [r1], [interpolation], [fadein], [fadeout])",
+          "arguments": [
+            {
+              "name": "r0",
+              "type": "float",
+              "optional": false,
+              "desc": "Rotation speed in radians per second."
+            },
+            {
+              "name": "r1",
+              "type": "float",
+              "optional": true,
+              "desc": "End rotation speed in radians per second."
+            },
+            {
+              "name": "interpolation",
+              "type": "string",
+              "optional": true,
+              "desc": "Interpolation method: linear, smooth, easein, easeout or constant. Default is linear."
+            },
+            {
+              "name": "fadein",
+              "type": "float",
+              "optional": true,
+              "desc": "Fade in between t=0 and t=fadein. Default is zero."
+            },
+            {
+              "name": "fadeout",
+              "type": "float",
+              "optional": true,
+              "desc": "Fade out between t=fadeout and t=1. Default is one."
+            }
+          ],
+          "return": [],
+          "info": "Makes the particle rotate. Positive values is counter-clockwise rotation.",
+          "example": "--Rotate fast at start and slow at end\nParticleEmissive(10, 1)"
+        },
+        {
+          "name": "ParticleStretch",
+          "def": "ParticleStretch(s0, [s1], [interpolation], [fadein], [fadeout])",
+          "arguments": [
+            {
+              "name": "s0",
+              "type": "float",
+              "optional": false,
+              "desc": "Stretch"
+            },
+            {
+              "name": "s1",
+              "type": "float",
+              "optional": true,
+              "desc": "End stretch"
+            },
+            {
+              "name": "interpolation",
+              "type": "string",
+              "optional": true,
+              "desc": "Interpolation method: linear, smooth, easein, easeout or constant. Default is linear."
+            },
+            {
+              "name": "fadein",
+              "type": "float",
+              "optional": true,
+              "desc": "Fade in between t=0 and t=fadein. Default is zero."
+            },
+            {
+              "name": "fadeout",
+              "type": "float",
+              "optional": true,
+              "desc": "Fade out between t=fadeout and t=1. Default is one."
+            }
+          ],
+          "return": [],
+          "info": "Stretch particle along with velocity. 0.0 means no stretching. 1.0 stretches with the particle motion over\none frame. Larger values stretches the particle even more.",
+          "example": "--Stretch particle along direction of motion\nParticleStretch(1.0)"
+        },
+        {
+          "name": "ParticleSticky",
+          "def": "ParticleSticky(s0, [s1], [interpolation], [fadein], [fadeout])",
+          "arguments": [
+            {
+              "name": "s0",
+              "type": "float",
+              "optional": false,
+              "desc": "Sticky (0.0 - 1.0)"
+            },
+            {
+              "name": "s1",
+              "type": "float",
+              "optional": true,
+              "desc": "End sticky (0.0 - 1.0)"
+            },
+            {
+              "name": "interpolation",
+              "type": "string",
+              "optional": true,
+              "desc": "Interpolation method: linear, smooth, easein, easeout or constant. Default is linear."
+            },
+            {
+              "name": "fadein",
+              "type": "float",
+              "optional": true,
+              "desc": "Fade in between t=0 and t=fadein. Default is zero."
+            },
+            {
+              "name": "fadeout",
+              "type": "float",
+              "optional": true,
+              "desc": "Fade out between t=fadeout and t=1. Default is one."
+            }
+          ],
+          "return": [],
+          "info": "Make particle stick when in contact with objects. This can be used for friction.",
+          "example": "--Make particles stick to objects\nParticleSticky(0.5)"
+        },
+        {
+          "name": "ParticleCollide",
+          "def": "ParticleCollide(c0, [c1], [interpolation], [fadein], [fadeout])",
+          "arguments": [
+            {
+              "name": "c0",
+              "type": "float",
+              "optional": false,
+              "desc": "Collide (0.0 - 1.0)"
+            },
+            {
+              "name": "c1",
+              "type": "float",
+              "optional": true,
+              "desc": "End collide (0.0 - 1.0)"
+            },
+            {
+              "name": "interpolation",
+              "type": "string",
+              "optional": true,
+              "desc": "Interpolation method: linear, smooth, easein, easeout or constant. Default is linear."
+            },
+            {
+              "name": "fadein",
+              "type": "float",
+              "optional": true,
+              "desc": "Fade in between t=0 and t=fadein. Default is zero."
+            },
+            {
+              "name": "fadeout",
+              "type": "float",
+              "optional": true,
+              "desc": "Fade out between t=fadeout and t=1. Default is one."
+            }
+          ],
+          "return": [],
+          "info": "Control particle collisions. A value of zero means that collisions are ignored. One means full collision.\nIt is sometimes useful to animate this value from zero to one in order to not collide with objects around\nthe emitter.",
+          "example": "--Disable collisions\nParticleCollide(0)\n\n--Enable collisions over time\nParticleCollide(0, 1)\n\n--Ramp up collisions very quickly, only skipping the first 5% of lifetime\nParticleCollide(1, 1, \"constant\", 0.05)"
+        },
+        {
+          "name": "SpawnParticle",
+          "def": "SpawnParticle(pos, velocity, lifetime)",
+          "arguments": [
+            {
+              "name": "pos",
+              "type": "table",
+              "optional": false,
+              "desc": "World space point as vector"
+            },
+            {
+              "name": "velocity",
+              "type": "table",
+              "optional": false,
+              "desc": "World space velocity as vector"
+            },
+            {
+              "name": "lifetime",
+              "type": "number",
+              "optional": false,
+              "desc": "Particle lifetime in seconds"
+            }
+          ],
+          "return": [],
+          "info": "Spawn particle using the previously set up particle state. You can call this multiple times\nusing the same particle state, but with different position, velocity and lifetime. You can\nalso modify individual properties in the particle state in between calls to to this function.",
+          "example": "ParticleReset()\nParticleType(\"smoke\")\nParticleColor(0.7, 0.6, 0.5)\n--Spawn particle at world origo with upwards velocity and a lifetime of ten seconds\nSpawnParticle(Vec(0, 0, 0), Vec(0, 1, 0), 10.0)"
+        }
+      ]
+    },
+    {
       "category": "Miscellaneous",
       "desc": "Functions of peripheral nature that doesn't fit in anywhere else",
       "functions": [
@@ -4565,45 +5116,6 @@
           "example": "Explosion(Vec(0, 10, 0), 1)"
         },
         {
-          "name": "SpawnParticle",
-          "def": "SpawnParticle(type, origin, velocity, size, life)",
-          "arguments": [
-            {
-              "name": "type",
-              "type": "string",
-              "optional": false,
-              "desc": "Type of particle: \"smoke\", \"darksmoke\", \"fire\" or \"water\""
-            },
-            {
-              "name": "origin",
-              "type": "table",
-              "optional": false,
-              "desc": "Origon in world space as vector"
-            },
-            {
-              "name": "velocity",
-              "type": "table",
-              "optional": false,
-              "desc": "Velocity in world space as vector (m/s)"
-            },
-            {
-              "name": "size",
-              "type": "number",
-              "optional": false,
-              "desc": "Size of particle (meters)"
-            },
-            {
-              "name": "life",
-              "type": "number",
-              "optional": false,
-              "desc": "Lifetime of particle (seconds)"
-            }
-          ],
-          "return": [],
-          "info": "No Description",
-          "example": "SpawnParticle(\"smoke\", Vec(0, 10, 0), Vec(0, 1, 0), 2, 5)"
-        },
-        {
           "name": "SpawnFire",
           "def": "SpawnFire(pos)",
           "arguments": [
@@ -4668,6 +5180,21 @@
           "return": [],
           "info": "Override current camera transform for this frame. Call continuously to keep overriding.",
           "example": "SetCameraTransform(Transform(Vec(0, 10, 0), QuatEuler(0, 90, 0)))"
+        },
+        {
+          "name": "SetCameraFov",
+          "def": "SetCameraFov(float)",
+          "arguments": [
+            {
+              "name": "float",
+              "type": "number",
+              "optional": false,
+              "desc": "Horizontal field of view in degrees (10-170)"
+            }
+          ],
+          "return": [],
+          "info": "Override field of view for the next frame for all camera modes, except when explicitly set in SetCameraTransform",
+          "example": "function tick()\n\tSetCameraFov(60)\nend"
         },
         {
           "name": "PointLight",
@@ -4765,7 +5292,7 @@
             }
           ],
           "return": [],
-          "info": "Draw a 3D line. In contrast to DrawDebugLine, it will not show behind objects. Default color is white.",
+          "info": "Draw a 3D line. In contrast to DebugLine, it will not show behind objects. Default color is white.",
           "example": "--Draw white debug line\nDrawLine(Vec(0, 0, 0), Vec(-10, 5, -10))\n\n--Draw red debug line\nDrawLine(Vec(0, 0, 0), Vec(10, 5, 10), 1, 0, 0)"
         },
         {
