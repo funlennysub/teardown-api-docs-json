@@ -1,5 +1,5 @@
 {
-  "version": "0.7.1",
+  "version": "0.7.3",
   "baseURL": "https://teardowngame.com/experimental/api.html",
   "api": [
     {
@@ -1025,6 +1025,40 @@
           ],
           "info": "Create quaternion using euler angle notation. The order of applied rotations uses the\n\"NASA standard aeroplane\" model:\nRotation around Y axis (yaw or heading)\nRotation around Z axis (pitch or attitude)\nRotation around X axis (roll or bank)",
           "example": "--Create quaternion representing rotation 30 degrees around Y axis and 25 degrees around Z axis\nlocal q = QuatEuler(0, 30, 25)"
+        },
+        {
+          "name": "GetQuatEuler",
+          "def": "x, y, z = GetQuatEuler(quat)",
+          "arguments": [
+            {
+              "name": "quat",
+              "type": "table",
+              "optional": false,
+              "desc": "Quaternion"
+            }
+          ],
+          "return": [
+            {
+              "name": "x",
+              "type": "number",
+              "optional": false,
+              "desc": "Angle around X axis in degrees, sometimes also called roll or bank"
+            },
+            {
+              "name": "y",
+              "type": "number",
+              "optional": false,
+              "desc": "Angle around Y axis in degrees, sometimes also called yaw or heading"
+            },
+            {
+              "name": "z",
+              "type": "number",
+              "optional": false,
+              "desc": "Angle around Z axis in degrees, sometimes also called pitch or attitude"
+            }
+          ],
+          "info": "Return euler angles from quaternion. The order of rotations uses the \"NASA standard aeroplane\" model:\nRotation around Y axis (yaw or heading)\nRotation around Z axis (pitch or attitude)\nRotation around X axis (roll or bank)",
+          "example": "--Return euler angles from quaternion q\nrx, ry, rz = GetQuatEuler(q)"
         },
         {
           "name": "QuatLookAt",
@@ -4207,7 +4241,7 @@
         },
         {
           "name": "DrawSprite",
-          "def": "DrawSprite(handle, transform, width, height, r, g, b, a, [depthTest], [additive])",
+          "def": "DrawSprite(handle, transform, width, height, [r], [g], [b], [a], [depthTest], [additive])",
           "arguments": [
             {
               "name": "handle",
@@ -4236,26 +4270,26 @@
             {
               "name": "r",
               "type": "number",
-              "optional": false,
-              "desc": "Red color"
+              "optional": true,
+              "desc": "Red color. Default 1.0."
             },
             {
               "name": "g",
               "type": "number",
-              "optional": false,
-              "desc": "Green color"
+              "optional": true,
+              "desc": "Green color. Default 1.0."
             },
             {
               "name": "b",
               "type": "number",
-              "optional": false,
-              "desc": "Blue color"
+              "optional": true,
+              "desc": "Blue color. Default 1.0."
             },
             {
               "name": "a",
               "type": "number",
-              "optional": false,
-              "desc": "Alpha"
+              "optional": true,
+              "desc": "Alpha. Default 1.0."
             },
             {
               "name": "depthTest",
