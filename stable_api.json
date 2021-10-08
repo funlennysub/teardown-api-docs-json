@@ -1,5 +1,5 @@
 {
-  "version": "0.7.2",
+  "version": "0.8.0",
   "baseURL": "https://teardowngame.com/modding/api.html",
   "api": [
     {
@@ -32,7 +32,7 @@
             }
           ],
           "info": "No Description",
-          "example": "--Retrieve blinkcount parameter, or set to 5 if omitted\nparameterBlinkCount = GetIntParameter(\"blinkcount\", 5)"
+          "example": "--Retrieve blinkcount parameter, or set to 5 if omitted\nparameterBlinkCount = GetIntParam(\"blinkcount\", 5)"
         },
         {
           "name": "GetFloatParam",
@@ -60,7 +60,7 @@
             }
           ],
           "info": "No Description",
-          "example": "--Retrieve speed parameter, or set to 10.0 if omitted\nparameterSpeed = GetFloatParameter(\"speed\", 10.0)"
+          "example": "--Retrieve speed parameter, or set to 10.0 if omitted\nparameterSpeed = GetFloatParam(\"speed\", 10.0)"
         },
         {
           "name": "GetBoolParam",
@@ -88,7 +88,7 @@
             }
           ],
           "info": "No Description",
-          "example": "--Retrieve playsound parameter, or false if omitted\nparameterPlaySound = GetBoolParameter(\"playsound\", false)"
+          "example": "--Retrieve playsound parameter, or false if omitted\nparameterPlaySound = GetBoolParam(\"playsound\", false)"
         },
         {
           "name": "GetStringParam",
@@ -116,7 +116,7 @@
             }
           ],
           "info": "No Description",
-          "example": "--Retrieve mode parameter, or \"idle\" if omitted\nparameterMode = GetSrtingParameter(\"mode\", \"idle\")"
+          "example": "--Retrieve mode parameter, or \"idle\" if omitted\nparameterMode = GetSrtingParam(\"mode\", \"idle\")"
         }
       ]
     },
@@ -204,7 +204,7 @@
             }
           ],
           "info": "No Description",
-          "example": "name = InputLastPressed()"
+          "example": "name = InputLastPressedKey()"
         },
         {
           "name": "InputPressed",
@@ -326,6 +326,28 @@
           "return": [],
           "info": "Set value of a number variable in the global context with an optional transition.\nIf a transition is provided the value will animate from current value to the new value during the transition time.\nTransition can be one of the following:\n\nTransition  Description\nlinear\t Linear transitioncosine\t Slow at beginning and endeasein\t Slow at beginningeaseout\t Slow at endbounce\t Bounce and overshoot new value",
           "example": "myValue = 0\nSetValue(\"myValue\", 1, \"linear\", 0.5)\n\nThis will change the value of myValue from 0 to 1 in a linear fasion over 0.5 seconds"
+        },
+        {
+          "name": "PauseMenuButton",
+          "def": "true = PauseMenuButton(title)",
+          "arguments": [
+            {
+              "name": "title",
+              "type": "string",
+              "optional": false,
+              "desc": "Text on button"
+            }
+          ],
+          "return": [
+            {
+              "name": "true",
+              "type": "if",
+              "optional": false,
+              "desc": ""
+            }
+          ],
+          "info": "Calling this function will add a button on the bottom bar when the game is paused. Use this\nas a way to bring up mod settings or other user interfaces while the game is running. \nCall this function every frame from the tick function for as long as the pause menu button\nshould still be visible.",
+          "example": "function tick()\n\tif PauseMenuButton(\"MyMod Settings\") then\n\t\tvisible = true\n\tend\nend\n\nfunction draw()\n\tif visible then\n\t\tUiMakeInteractive()\n\t\t...\n\tend\nend"
         },
         {
           "name": "StartLevel",
@@ -1025,6 +1047,40 @@
           ],
           "info": "Create quaternion using euler angle notation. The order of applied rotations uses the\n\"NASA standard aeroplane\" model:\nRotation around Y axis (yaw or heading)\nRotation around Z axis (pitch or attitude)\nRotation around X axis (roll or bank)",
           "example": "--Create quaternion representing rotation 30 degrees around Y axis and 25 degrees around Z axis\nlocal q = QuatEuler(0, 30, 25)"
+        },
+        {
+          "name": "GetQuatEuler",
+          "def": "x, y, z = GetQuatEuler(quat)",
+          "arguments": [
+            {
+              "name": "quat",
+              "type": "table",
+              "optional": false,
+              "desc": "Quaternion"
+            }
+          ],
+          "return": [
+            {
+              "name": "x",
+              "type": "number",
+              "optional": false,
+              "desc": "Angle around X axis in degrees, sometimes also called roll or bank"
+            },
+            {
+              "name": "y",
+              "type": "number",
+              "optional": false,
+              "desc": "Angle around Y axis in degrees, sometimes also called yaw or heading"
+            },
+            {
+              "name": "z",
+              "type": "number",
+              "optional": false,
+              "desc": "Angle around Z axis in degrees, sometimes also called pitch or attitude"
+            }
+          ],
+          "info": "Return euler angles from quaternion. The order of rotations uses the \"NASA standard aeroplane\" model:\nRotation around Y axis (yaw or heading)\nRotation around Z axis (pitch or attitude)\nRotation around X axis (roll or bank)",
+          "example": "--Return euler angles from quaternion q\nrx, ry, rz = GetQuatEuler(q)"
         },
         {
           "name": "QuatLookAt",
@@ -1832,7 +1888,7 @@
         },
         {
           "name": "ApplyBodyImpulse",
-          "def": "ApplyBodyImpulse(handle, position, velocity)",
+          "def": "ApplyBodyImpulse(handle, position, impulse)",
           "arguments": [
             {
               "name": "handle",
@@ -1847,7 +1903,7 @@
               "desc": "World space position as vector"
             },
             {
-              "name": "velocity",
+              "name": "impulse",
               "type": "table",
               "optional": false,
               "desc": "World space impulse as vector"
@@ -2384,8 +2440,118 @@
           "example": "local hit, dist, normal, shape = QueryRaycast(pos, dir, 10)\nif hit then\n\tlocal hitPoint = VecAdd(pos, VecScale(dir, dist))\n\tlocal mat = GetShapeMaterialAtPosition(shape, hitPoint)\n\tDebugPrint(\"Raycast hit voxel made out of \" .. mat)\nend"
         },
         {
+          "name": "GetShapeMaterialAtIndex",
+          "def": "type, r, g, b, a = GetShapeMaterialAtIndex(handle, x, y, z)",
+          "arguments": [
+            {
+              "name": "handle",
+              "type": "number",
+              "optional": false,
+              "desc": "Shape handle"
+            },
+            {
+              "name": "x",
+              "type": "number",
+              "optional": false,
+              "desc": "X integer coordinate"
+            },
+            {
+              "name": "y",
+              "type": "number",
+              "optional": false,
+              "desc": "Y integer coordinate"
+            },
+            {
+              "name": "z",
+              "type": "number",
+              "optional": false,
+              "desc": "Z integer coordinate"
+            }
+          ],
+          "return": [
+            {
+              "name": "type",
+              "type": "string",
+              "optional": false,
+              "desc": "Material type"
+            },
+            {
+              "name": "r",
+              "type": "number",
+              "optional": false,
+              "desc": "Red"
+            },
+            {
+              "name": "g",
+              "type": "number",
+              "optional": false,
+              "desc": "Green"
+            },
+            {
+              "name": "b",
+              "type": "number",
+              "optional": false,
+              "desc": "Blue"
+            },
+            {
+              "name": "a",
+              "type": "number",
+              "optional": false,
+              "desc": "Alpha"
+            }
+          ],
+          "info": "Return material properties for a particular voxel in the voxel grid indexed by integer values.\nThe first index is zero (not one, as opposed to a lot of lua related things)",
+          "example": "local mat = GetShapeMaterialAtIndex(shape, 0, 0, 0)\nDebugPrint(\"The voxel closest to origo is of material: \" .. mat)"
+        },
+        {
+          "name": "GetShapeClosestPoint",
+          "def": "hit, point, normal = GetShapeClosestPoint(shape, origin, maxDist)",
+          "arguments": [
+            {
+              "name": "shape",
+              "type": "number",
+              "optional": false,
+              "desc": "Shape handle"
+            },
+            {
+              "name": "origin",
+              "type": "table",
+              "optional": false,
+              "desc": "World space point"
+            },
+            {
+              "name": "maxDist",
+              "type": "[number]",
+              "optional": false,
+              "desc": ""
+            }
+          ],
+          "return": [
+            {
+              "name": "hit",
+              "type": "boolean",
+              "optional": false,
+              "desc": "True if a point was found"
+            },
+            {
+              "name": "point",
+              "type": "table",
+              "optional": false,
+              "desc": "World space closest point"
+            },
+            {
+              "name": "normal",
+              "type": "table",
+              "optional": false,
+              "desc": "World space normal at closest point"
+            }
+          ],
+          "info": "This will return the closest point of a specific shape",
+          "example": "local hit, p, n = GetShapeClosestPoint(s, Vec(0, 5, 0))\nif hit then\n--Point p of shape s is closest to (0,5,0)\nend"
+        },
+        {
           "name": "GetShapeSize",
-          "def": "xsize, ysize, zsize = GetShapeSize(handle)",
+          "def": "xsize, ysize, zsize, scale = GetShapeSize(handle)",
           "arguments": [
             {
               "name": "handle",
@@ -2412,6 +2578,12 @@
               "type": "number",
               "optional": false,
               "desc": "Size in voxels along z axis"
+            },
+            {
+              "name": "scale",
+              "type": "number",
+              "optional": false,
+              "desc": "The size of one voxel in meters (with default scale it is 0.1)"
             }
           ],
           "info": "Return the size of a shape in voxels",
@@ -3989,7 +4161,7 @@
         },
         {
           "name": "RegisterTool",
-          "def": "RegisterTool(id, name, file)",
+          "def": "RegisterTool(id, name, file, [group])",
           "arguments": [
             {
               "name": "id",
@@ -4008,6 +4180,12 @@
               "type": "string",
               "optional": false,
               "desc": "Path to vox file"
+            },
+            {
+              "name": "group",
+              "type": "number",
+              "optional": true,
+              "desc": "Tool group for this tool (1-6) Default is 6."
             }
           ],
           "return": [],
@@ -4996,6 +5174,21 @@
           "example": "--Disable collisions\nParticleCollide(0)\n\n--Enable collisions over time\nParticleCollide(0, 1)\n\n--Ramp up collisions very quickly, only skipping the first 5% of lifetime\nParticleCollide(1, 1, \"constant\", 0.05)"
         },
         {
+          "name": "ParticleFlags",
+          "def": "ParticleFlags(bitmask)",
+          "arguments": [
+            {
+              "name": "bitmask",
+              "type": "number",
+              "optional": false,
+              "desc": "Particle flags (bitmask 0-65535)"
+            }
+          ],
+          "return": [],
+          "info": "Set particle bitmask. The value 256 means fire extinguishing particles and is currently the only \nflag in use. There might be support for custom flags and queries in the future.",
+          "example": "--Fire extinguishing particle\nParticleFlags(256)\nSpawnParticle(...)"
+        },
+        {
           "name": "SpawnParticle",
           "def": "SpawnParticle(pos, velocity, lifetime)",
           "arguments": [
@@ -5146,6 +5339,96 @@
           "example": "local c = GetFireCount()"
         },
         {
+          "name": "QueryClosestFire",
+          "def": "hit, pos = QueryClosestFire(origin, maxDist)",
+          "arguments": [
+            {
+              "name": "origin",
+              "type": "table",
+              "optional": false,
+              "desc": "World space position as vector"
+            },
+            {
+              "name": "maxDist",
+              "type": "number",
+              "optional": false,
+              "desc": "Maximum search distance"
+            }
+          ],
+          "return": [
+            {
+              "name": "hit",
+              "type": "boolean",
+              "optional": false,
+              "desc": "A fire was found within search distance"
+            },
+            {
+              "name": "pos",
+              "type": "table",
+              "optional": false,
+              "desc": "Position of closest fire"
+            }
+          ],
+          "info": "No Description",
+          "example": "local hit, pos = QueryClosestFire(GetPlayerTransform().pos, 5.0)\nif hit then\n\t--There is a fire within 5 meters to the player. Mark it with a debug cross.\n\tDebugCross(pos)\nend"
+        },
+        {
+          "name": "QueryAabbFireCount",
+          "def": "count = QueryAabbFireCount(min, max)",
+          "arguments": [
+            {
+              "name": "min",
+              "type": "table",
+              "optional": false,
+              "desc": "Aabb minimum point"
+            },
+            {
+              "name": "max",
+              "type": "table",
+              "optional": false,
+              "desc": "Aabb maximum point"
+            }
+          ],
+          "return": [
+            {
+              "name": "count",
+              "type": "number",
+              "optional": false,
+              "desc": "Number of active fires in bounding box"
+            }
+          ],
+          "info": "No Description",
+          "example": "local count = QueryAabbFireCount(Vec(0,0,0), Vec(10,10,10))"
+        },
+        {
+          "name": "RemoveAabbFires",
+          "def": "count = RemoveAabbFires(min, max)",
+          "arguments": [
+            {
+              "name": "min",
+              "type": "table",
+              "optional": false,
+              "desc": "Aabb minimum point"
+            },
+            {
+              "name": "max",
+              "type": "table",
+              "optional": false,
+              "desc": "Aabb maximum point"
+            }
+          ],
+          "return": [
+            {
+              "name": "count",
+              "type": "number",
+              "optional": false,
+              "desc": "Number of fires removed"
+            }
+          ],
+          "info": "No Description",
+          "example": "local removedCount= RemoveAabbFires(Vec(0,0,0), Vec(10,10,10))"
+        },
+        {
           "name": "GetCameraTransform",
           "def": "transform = GetCameraTransform()",
           "arguments": [],
@@ -5247,8 +5530,176 @@
             }
           ],
           "return": [],
-          "info": "Experimental. Scale time in order to make a slow-motion effect. Audio will \nalso be affected. Note that this will affect physics behavior and is not \nintended for gameplay purposes. Calling this function will slow down time \nfor the next frame only. Call every frame from tick function to get steady\nslow-motion.",
-          "example": "--Slow down time when holding down a key\nif InputDown('t') then\n\tSetTimeScale(0.2)\nend"
+          "info": "Experimental. Scale time in order to make a slow-motion effect. Audio will\nalso be affected. Note that this will affect physics behavior and is not\nintended for gameplay purposes. Calling this function will slow down time\nfor the next frame only. Call every frame from tick function to get steady\nslow-motion.",
+          "example": "--Slow down time when holding down a key\nif InputDown('t') then\nSetTimeScale(0.2)\nend"
+        },
+        {
+          "name": "SetEnvironmentDefault",
+          "def": "SetEnvironmentDefault()",
+          "arguments": [],
+          "return": [],
+          "info": "Reset the environment properties to default. This is often useful before \nsetting up a custom environment.",
+          "example": "SetEnvironmentDefault()"
+        },
+        {
+          "name": "SetEnvironmentProperty",
+          "def": "SetEnvironmentProperty(name, value0, [value1], [value2], [value3])",
+          "arguments": [
+            {
+              "name": "name",
+              "type": "string",
+              "optional": false,
+              "desc": "Property name"
+            },
+            {
+              "name": "value0",
+              "type": "varying",
+              "optional": false,
+              "desc": "Property value (type depends on property)"
+            },
+            {
+              "name": "value1",
+              "type": "varying",
+              "optional": true,
+              "desc": "Extra property value (only some properties)"
+            },
+            {
+              "name": "value2",
+              "type": "varying",
+              "optional": true,
+              "desc": "Extra property value (only some properties)"
+            },
+            {
+              "name": "value3",
+              "type": "varying",
+              "optional": true,
+              "desc": "Extra property value (only some properties)"
+            }
+          ],
+          "return": [],
+          "info": "This function is used for manipulating the environment properties. The available properties are \nexactly the same as in the editor.",
+          "example": "SetEnvironmentProperty(\"skybox\", \"cloudy.dds\")\nSetEnvironmentProperty(\"rain\", 0.7)\nSetEnvironmentProperty(\"fogcolor\", 0.5, 0.5, 0.8)\nSetEnvironmentProperty(\"nightlight\", false)"
+        },
+        {
+          "name": "GetEnvironmentProperty",
+          "def": "value0, value1, value2, value3, value4 = GetEnvironmentProperty(name)",
+          "arguments": [
+            {
+              "name": "name",
+              "type": "string",
+              "optional": false,
+              "desc": "Property name"
+            }
+          ],
+          "return": [
+            {
+              "name": "value0",
+              "type": "varying",
+              "optional": false,
+              "desc": "Property value (type depends on property)"
+            },
+            {
+              "name": "value1",
+              "type": "varying",
+              "optional": false,
+              "desc": "Property value (only some properties)"
+            },
+            {
+              "name": "value2",
+              "type": "varying",
+              "optional": false,
+              "desc": "Property value (only some properties)"
+            },
+            {
+              "name": "value3",
+              "type": "varying",
+              "optional": false,
+              "desc": "Property value (only some properties)"
+            },
+            {
+              "name": "value4",
+              "type": "varying",
+              "optional": false,
+              "desc": "Property value (only some properties)"
+            }
+          ],
+          "info": "This function is used for querying the current environment properties. The available properties are\nexactly the same as in the editor.",
+          "example": "local skyboxPath = GetEnvironmentProperty(\"skybox\")\nlocal rainValue = GetEnvironmentProperty(\"rain\")\nlocal r,g,b = GetEnvironmentProperty(\"fogcolor\")\nlocal enabled = GetEnvironmentProperty(\"nightlight\")"
+        },
+        {
+          "name": "SetPostProcessingDefault",
+          "def": "SetPostProcessingDefault()",
+          "arguments": [],
+          "return": [],
+          "info": "Reset the post processing properties to default.",
+          "example": "SetPostProcessingDefault()"
+        },
+        {
+          "name": "SetPostProcessingProperty",
+          "def": "SetPostProcessingProperty(name, value0, [value1], [value2])",
+          "arguments": [
+            {
+              "name": "name",
+              "type": "string",
+              "optional": false,
+              "desc": "Property name"
+            },
+            {
+              "name": "value0",
+              "type": "number",
+              "optional": false,
+              "desc": "Property value"
+            },
+            {
+              "name": "value1",
+              "type": "number",
+              "optional": true,
+              "desc": "Extra property value (only some properties)"
+            },
+            {
+              "name": "value2",
+              "type": "number",
+              "optional": true,
+              "desc": "Extra property value (only some properties)"
+            }
+          ],
+          "return": [],
+          "info": "This function is used for manipulating the post processing properties. The available properties are\nexactly the same as in the editor.",
+          "example": "--Sepia post processing\nSetPostProcessingProperty(\"saturation\", 0.4)\nSetPostProcessingProperty(\"colorbalance\", 1.3, 1.0, 0.7)"
+        },
+        {
+          "name": "GetPostProcessingProperty",
+          "def": "value0, value1, value2 = GetPostProcessingProperty(name)",
+          "arguments": [
+            {
+              "name": "name",
+              "type": "string",
+              "optional": false,
+              "desc": "Property name"
+            }
+          ],
+          "return": [
+            {
+              "name": "value0",
+              "type": "number",
+              "optional": false,
+              "desc": "Property value"
+            },
+            {
+              "name": "value1",
+              "type": "number",
+              "optional": false,
+              "desc": "Property value (only some properties)"
+            },
+            {
+              "name": "value2",
+              "type": "number",
+              "optional": false,
+              "desc": "Property value (only some properties)"
+            }
+          ],
+          "info": "This function is used for querying the current post processing properties. \nThe available properties are exactly the same as in the editor.",
+          "example": "local saturation = GetPostProcessingProperty(\"saturation\")\nlocal r,g,b = GetPostProcessingProperty(\"colorbalance\")"
         },
         {
           "name": "DrawLine",
@@ -5725,7 +6176,7 @@
           "arguments": [],
           "return": [],
           "info": "Disable input",
-          "example": "UiPush()\n\tUiDisableInput()\n\tif UiButtonText(\"Okay\") then\n\t\t--Will never happen\n\tend\nUiPop()"
+          "example": "UiPush()\n\tUiDisableInput()\n\tif UiTextButton(\"Okay\") then\n\t\t--Will never happen\n\tend\nUiPop()"
         },
         {
           "name": "UiEnableInput",
@@ -5972,7 +6423,7 @@
             }
           ],
           "info": "No Description",
-          "example": "local w, h = GetTextSize(\"Some text\")"
+          "example": "local w, h = UiGetTextSize(\"Some text\")"
         },
         {
           "name": "UiWordWrap",
